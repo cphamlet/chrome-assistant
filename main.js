@@ -60,41 +60,24 @@ var new_offset = {top:top, left:left};
         });
 
         $(save_button).click(function(){
-            alert("save button clicked!");
             borderedElement.style.border = "";
+           chrome.runtime.sendMessage({command: "send", element:elementOnMouseOver.outerHTML, enteredText:$(editable_text).text()}, 
+            function(response) {
+                    alert(response.msg +" : "+ response.enteredText);
+            });
+
             created_element.remove();
+
+
+
+
+
         });
 
         return created_element;
 
         };
 
-        
-
-//     console.log("Created");
-//     var div = document.createElement("div");
-//     div.style.width = "100px";
-//     div.style.height = "100px";
-//     div.style.top = top.toString()+"px";
-//     div.style.left = left.toString()+"px";
-//     div.style.backgroundColor = "blue";
-//     div.innerHTML = "";
-//     div.style.zIndex = "2000000";
-//     div.setAttribute("class", "draggable");
-//     div.setAttribute("contenteditable", "true");
-//     div.style.position = "absolute";
-
-// //Uncomment for draggability
-//     //$(div).draggable();
-//     document.body.appendChild(div);
-
-//     var innerTextArea = document.createElement('input');
-
-//     div.appendChild(innerTextArea);
-
-
-
-//}
 
 $(document).keydown(function(event) {
     switch(event.which) {
@@ -104,33 +87,27 @@ $(document).keydown(function(event) {
 
             if(elementOnMouseOver.style.border == "" && elementOnMouseOver.tagName != "input"){
     			elementOnMouseOver.style.border = "thick solid green";
-                
                 var edit_box = create_popup_box($(elementOnMouseOver).offset().top, $(elementOnMouseOver).offset().left+50, elementOnMouseOver);
-
-
-
-                chrome.runtime.sendMessage({command: "send", element:elementOnMouseOver.outerHTML}, function(response) {
-
-                    
-                });
    			}
 
                 break;
         case 40:
         chrome.runtime.sendMessage({command: "get"}, function(response) {
-            alert(response.msg);
-            alert(response.element);
-            var elements = document.getElementsByTagName("*");
+            //alert(response.task_obj["element_html"]);
 
-            for (var i = 0, element; element = elements[i++];) {
-                if(element.outerHTML == response.element){
-                    alert("item found");
+            alert("Searching for element: " + response.taskObj["element_html"]);
+
+            var all_elements = document.getElementsByTagName("*");
+
+            for (var i = 0, element; element = all_elements[i++];) {
+                if(element.outerHTML == response.taskObj["element_html"]){
+                    alert("Item found: " + response.taskObj["entered_text"]);
                     element.style.border = "thick solid green";
                 }
             }
-        });
-            break;
 
-       		}
+         });
 
-    });
+    }
+
+});
