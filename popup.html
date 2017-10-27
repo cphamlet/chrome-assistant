@@ -1,0 +1,71 @@
+<!doctype html>
+<!--
+ This page is shown when the extension button is clicked, because the
+ "browser_action" field in manifest.json contains the "default_popup" key with
+ value "popup.html".
+ -->
+<html>
+  <head>
+    <title>Getting Started Extension's Popup</title>
+    <link rel="stylesheet" href="css/foundation.min.css">
+    <style type="text/css">
+      body {
+        margin: 10px;
+        white-space: nowrap;
+        width:200px;
+      }
+
+      h1 {
+        font-size: 15px;
+      }
+
+      .container {
+        align-items: center;
+        display: flex;
+        justify-content: space-between;
+      }
+      #main_screen{
+        display: none;
+      }
+      #login_screen{
+        display: flex;
+      }
+
+    </style>
+
+    <!--
+      - JavaScript and HTML must be in separate files: see our Content Security
+      - Policy documentation[1] for details and explanation.
+      -
+      - [1]: https://developer.chrome.com/extensions/contentSecurityPolicy
+    -->
+
+    <script src="jquery.js"></script>
+    <script src="foundation.min.js"></script>
+    <script src="popup.js"></script>
+  </head>
+
+  <body>
+    <h1>Web Tutorials</h1>
+    <div clas="container" id="login_screen">
+    <form action="javascript:void(0);">
+    Username: <input type="text" name="user" value="">
+    Password: <input type="text" name="pass" value="">
+      <button data-addCart class="button" id="login"><span>Login</span></button>
+  </form>
+    </div>
+    <div class="container" id="main_screen">
+      <h2>Instructor View</h2>
+      <p>Record</p>
+      <p>View Saved Recordings</p>
+      <!-- Using radio buttons – each switch turns off the other two -->
+<div class="switch radius">
+  <input id="exampleRadioSwitch2" type="radio" name="testGroup">
+  <label for="exampleRadioSwitch2"></label>
+</div> 
+      <br>
+      <h2>Student View</h2> 
+      <p>Load Saved Recording</p>
+    </div>
+  </body>
+</html>
