@@ -15,9 +15,20 @@ chrome.runtime.onMessage.addListener(
     if (request.command == "get"){
       sendResponse({msg: "Background: sending element from background script", taskObj:items.objs.shift()});
     }else if (request.command == "send"){
-    	items.objs.push({"element_html" :request.element, "entered_text": request.enteredText});
-    	console.log(request.element);
-    	sendResponse({msg: "Background: Message received", enteredText:request.enteredText});
+    	items.objs.push({"element_html" :request.element_html, "entered_text": request.entered_text, "url": request.url});
+    	console.log(request.element_html);
+    	sendResponse({msg: "Background: Message received", enteredText:request.entered_text});
+    }else if (request.command == "save"){
+      sendResponse(JSON.stringify(items));
+    }else if (request.command == "clear"){
+      items = { objs : [] };
+      sendResponse("CLEARED");
     }
+
+
   });
+
+
+
+
 

@@ -1,4 +1,3 @@
-<!doctype html>
 <!--
  This page is shown when the extension button is clicked, because the
  "browser_action" field in manifest.json contains the "default_popup" key with
@@ -48,7 +47,7 @@
   <body>
     <h1>Web Tutorials</h1>
     <div clas="container" id="login_screen">
-    <form action="javascript:void(0);">
+    <form>
     Username: <input type="text" name="user" value="">
     Password: <input type="text" name="pass" value="">
       <button data-addCart class="button" id="login"><span>Login</span></button>
@@ -56,16 +55,11 @@
     </div>
     <div class="container" id="main_screen">
       <h2>Instructor View</h2>
-      <p>Record</p>
-      <p>View Saved Recordings</p>
-      <!-- Using radio buttons – each switch turns off the other two -->
-<div class="switch radius">
-  <input id="exampleRadioSwitch2" type="radio" name="testGroup">
-  <label for="exampleRadioSwitch2"></label>
-</div> 
+      <button type="button" id="save_record">Save recording</button>
+      <button type="button" id="clear_record">CLEAR Recording</button>
       <br>
       <h2>Student View</h2> 
-      <p>Load Saved Recording</p>
+      <button type="button" id="load_record">Load Saved Recording</button>
     </div>
   </body>
 </html>

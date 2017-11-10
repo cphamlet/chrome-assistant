@@ -4,6 +4,10 @@ $(window).mouseover(function(e) {
     x = e.clientX, y = e.clientY;
 });
 
+
+var student_view_next = "null";
+
+
 function create_popup_box(top, left, borderedElement){
 
 var new_offset = {top:top, left:left};
@@ -61,9 +65,9 @@ var new_offset = {top:top, left:left};
 
         $(save_button).click(function(){
             borderedElement.style.border = "";
-           chrome.runtime.sendMessage({command: "send", element:elementOnMouseOver.outerHTML, enteredText:$(editable_text).text()}, 
+           chrome.runtime.sendMessage({command: "send", element_html:elementOnMouseOver.outerHTML, entered_text:$(editable_text).text(), url:window.location["href"]}, 
             function(response) {
-                    alert(response.msg +" : "+ response.enteredText);
+                    alert(response.msg +" : "+ response.enteredText + " : "+ window.location["href"]);
             });
 
             created_element.remove();
@@ -91,10 +95,21 @@ $(document).keydown(function(event) {
    			}
 
                 break;
-        case 40:
-        chrome.runtime.sendMessage({command: "get"}, function(response) {
+
+    }
+
+});
+
+function goToNextURL(){
+            chrome.runtime.sendMessage({command: "get"}, function(response) {
             //alert(response.task_obj["element_html"]);
 
+            //This sends the user to the next page if the urls do not match
+            if(window.location["href"] != response.taskObj["url"]) {
+                window.location = response.taskObj["url"];
+            }
+
+            
             alert("Searching for element: " + response.taskObj["element_html"]);
 
             var all_elements = document.getElementsByTagName("*");
@@ -107,7 +122,34 @@ $(document).keydown(function(event) {
             }
 
          });
+}
 
+chrome.runtime.onMessage.addListener(
+  function(request, sender, sendResponse) {
+    if (request.command== "load"){
+        if(student_view_next != "null")
+            student_view_next.remove();
+
+    student_view_next = $('<div id = "fjh43jfb">Click me to go next</div>');
+
+    student_view_next.css({
+        'height': '40px', 
+        'position': 'fixed', 
+        'bottom':'5%',
+        'right':'5%',
+        'width': '70px',
+        'background-color': '#393838',
+        'opacity': '1'
+    });
+
+    student_view_next.appendTo('body');
+
+    student_view_next.click(function(){
+        goToNextURL();
+    });
+
+      sendResponse("Action completed");
     }
+  });
 
-});
+
