@@ -210,7 +210,9 @@ function createAdvanceLinkButton(){
         'right':'5%',
         'width': '70px',
         'background-color': '#0080ff',
-        'opacity': '1'
+        'opacity': '1',
+        'text-align' : 'center',
+        'color'     : 'white'
     });
 
     student_view_next.appendTo('body');
