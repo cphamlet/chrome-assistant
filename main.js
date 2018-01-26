@@ -1,9 +1,7 @@
 /*
 * Author: Connor Hamlet
 * Funcitonality: This is the content script for our google chrome extension. 
-*
-*
-*
+* This is the script responsible for displaying the save button and the "Next" button.
 */
 //x and y of mouse pointer
 var x = 0;
@@ -61,18 +59,20 @@ var new_offset = {top:top, left:left};
         'background-color':'#ededed',
         'height'    : '40px',
         'font-size' : '12px',
-        'color'     : 'black'
+        'color'     : 'black',
+        'border'    :  'black solid'
     });
     save_button.css({
         'background-color' : '#00826c',
         'color'         : "white",
         'width'         : "75px",
-        'height'        :"30px"
+        'height'        :"30px",
+        'margin-top'    :"3px"   
     });
 
     button_text.css({
         'margin': '10px 10px',
-        'font-size': '24px'
+        'font-size': '22px'
     });
 
     created_element.append(editable_text);
@@ -201,18 +201,24 @@ function createAdvanceLinkButton(){
     if(student_view_next != "null"){
             student_view_next.remove();
     }
-    student_view_next = $('<div id = "fjh43jfb">Next</div>');
+    student_view_next = $('<a id = "fjh43jfb" href="#">Next</a>');
 
     student_view_next.css({
-        'height': '40px', 
-        'position': 'fixed', 
-        'bottom':'5%',
-        'right':'5%',
-        'width': '70px',
-        'background-color': '#0080ff',
-        'opacity': '1',
-        'text-align' : 'center',
-        'color'     : 'white'
+        // 'height': '40px', 
+         'position': 'fixed', 
+         'bottom':'5%',
+         'right':'5%',
+         'background-color': '#0078e7',
+         'font-size':'14px',
+         'font-family':'sans-serif',
+         'padding' : '.5em 1em',
+         'border':'transparent',
+         'border-radius':'2px',
+        // 'width': '70px',
+        // 'background-color': '#0080ff',
+        // 'opacity': '1',
+        // 'text-align' : 'center',
+         'color'     : 'white'
     });
 
     student_view_next.appendTo('body');

@@ -9,7 +9,8 @@ $( document ).ready(function() {
 	$("#login").click(removeLoginScreen());
 //Save record button sends to server
 	$("#save_record").click(function(){
-		//send data to server
+		//send data to background script
+		console.log("saving");
 	chrome.runtime.sendMessage({command: "save"}, 
 	            function(response) {
 	                    console.log(response);
