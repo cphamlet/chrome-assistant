@@ -10,7 +10,7 @@ $( document ).ready(function() {
 //Save record button sends to server
 	$("#save_record").click(function(){
 		//send data to background script
-		console.log("saving");
+	//Retrieves all of data in popup. 
 	chrome.runtime.sendMessage({command: "save"}, 
 	            function(response) {
 	                    console.log(response);

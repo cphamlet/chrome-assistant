@@ -6,7 +6,7 @@
     "tabs","<all_urls>"
     ],
     "browser_action": {
-        "default_icon": "shield.png",
+        "default_icon": "./assets/img/shield.png",
         "default_popup": "popup.html"
     },
 
@@ -16,12 +16,12 @@
             "http://*/*",
             "https://*/*"
             ],
-        "js": ["jquery.js", "jquery-ui.js", "draggable.js", "main.js"],
+        "js": ["./assets/js/jquery.js", "./assets/js/jquery-ui.js", "draggable.js", "main.js"],
         "run_at": "document_end"         // pay attention to this line
         }
     ], 
     "background": {
-    "scripts": ["background.js", "jquery.js"]
+    "scripts": ["background.js", "./assets/js/jquery.js"]
     },
     "manifest_version":2
 }
