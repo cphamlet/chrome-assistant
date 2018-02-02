@@ -165,12 +165,31 @@ function goToNextURL(){
 
 //Displays border on webpage from element stored in background page. 
 function loadHTMLContent(responseObj){
-            console.log("Searching for element: " + responseObj.taskObj["element_html"]);
+
+            let instructor_text = $('<p id = "sdajck3" href="#">Text box</p>');
+            console.log(instructor_text);
+            instructor_text[0].innerHTML = responseObj.taskObj["entered_text"];
+            instructor_text.css({
+                 'position': 'fixed', 
+                 'bottom':'5%',
+                 'left':'5%',
+                 'background-color': '#e60505',
+                 'font-size':'12px',
+                 'font-family':'sans-serif',
+                 'padding' : '.5em 1em',
+                 'border':'transparent',
+                 'border-radius':'2px',
+                 'color'     : 'white'
+            });
+        
+            instructor_text.appendTo('body');
+
+            //console.log("Searching for element: " + responseObj.taskObj["element_html"]);
             var all_elements = document.getElementsByTagName("*");
             for (var i = 0, element; element = all_elements[i++];) {
-                console.log(element.outerHTML);
+      //          console.log(element.outerHTML);
                 if(element.outerHTML == responseObj.taskObj["element_html"]){
-                    console.log("Item found: " + responseObj.taskObj["entered_text"]);
+                   // console.log("Item found: " + responseObj.taskObj["entered_text"]);
                     element.style.border = "thick solid green";
                 }
             }
