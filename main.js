@@ -30,11 +30,16 @@ function retrieveItemfromBackgroundScript(){
                         createAdvanceLinkButton();
                         //Message asks background if you are on the correct link
                         chrome.runtime.sendMessage({command: "peek"}, function(response) {
-                            //If equal, load the html 
-                            if(typeof response.taskObj != 'undefined' && window.location["href"] == response.taskObj["url"]) {
+                            //If urls match, load the html 
+                            console.log(JSON.stringify(response.tutorial));
+
+                            if(window.location["href"] == get_current_url_obj(response.tutorial).url) {
                                 //Message asks background for html and moves to next item. 
-                                chrome.runtime.sendMessage({command: "shift"}, function(responseShift) {
-                                    console.log("shifted:" + JSON.stringify(responseShift.taskObj));
+                                chrome.runtime.sendMessage({command: "get_step_and_increment"}, function(responseShift) {
+                                    if(responseShift==null){
+                                        alert("Out of steps!");
+                                    }
+                                    console.log("shifted:" + JSON.stringify(responseShift.tutorial));
                                     loadHTMLContent(responseShift);
                                 }); //end of shift command msg 
                             }//end of null check
@@ -111,7 +116,7 @@ var new_offset = {top:top, left:left};
                   //This replace with function, removes the element with the green border if one already exists. 
                   $(elementOnMouseOver).replaceWith($(unborderedElementPointerHTML).prop('outerHTML'));
               }
-           chrome.runtime.sendMessage({command: "send", element_html:unborderedElementPointerHTML, entered_text:$(editable_text).text(), url:window.location["href"]}, 
+           chrome.runtime.sendMessage({command: "record_action", element_html:unborderedElementPointerHTML, entered_text:$(editable_text).text(), url:window.location["href"]}, 
             function(response) {
                 //    alert(response.msg +" : "+ response.enteredText + " : "+ window.location["href"]);
             });
@@ -154,8 +159,8 @@ function goToNextURL(){
             chrome.runtime.sendMessage({command: "peek"}, function(response) {
 
             //This sends the user to the next page if the urls do not match
-            if(typeof(response.taskObj) != 'undefined' && window.location["href"] != response.taskObj["url"]) {
-                window.location = response.taskObj["url"];
+            if(typeof(response.tutorial) != 'undefined' && window.location["href"] != get_current_url_obj(response.tutorial).url) {
+                window.location = get_current_url_obj(response.tutorial).url;
             }else{
                    loadHTMLContent(response);
             }
@@ -165,10 +170,9 @@ function goToNextURL(){
 
 //Displays border on webpage from element stored in background page. 
 function loadHTMLContent(responseObj){
-
+            console.log(JSON.stringify(responseObj.tutorial));
             let instructor_text = $('<p id = "sdajck3" href="#">Text box</p>');
-            console.log(instructor_text);
-            instructor_text[0].innerHTML = responseObj.taskObj["entered_text"];
+            instructor_text[0].innerHTML = get_current_step_obj(responseObj.tutorial).caption;
             instructor_text.css({
                  'position': 'fixed', 
                  'bottom':'5%',
@@ -184,18 +188,17 @@ function loadHTMLContent(responseObj){
         
             instructor_text.appendTo('body');
 
-            //console.log("Searching for element: " + responseObj.taskObj["element_html"]);
+            //console.log("Searching for element: " 
             var all_elements = document.getElementsByTagName("*");
             for (var i = 0, element; element = all_elements[i++];) {
-      //          console.log(element.outerHTML);
-                if(element.outerHTML == responseObj.taskObj["element_html"]){
-                   // console.log("Item found: " + responseObj.taskObj["entered_text"]);
+                if(element.outerHTML == get_current_step_obj(responseObj.tutorial).element_html){
                     element.style.border = "thick solid green";
                 }
             }
 
 }
 
+//This listens to the popup script
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
     if (request.command == "load"){
@@ -209,7 +212,7 @@ chrome.runtime.onMessage.addListener(
 
     chrome.runtime.sendMessage({command: "set-load-status"}, 
             function(response) {
-                    console.log("Set load status to: "+response);
+                    console.log("Set load status to: " + response);
                  });
     createAdvanceLinkButton();
     sendResponse("Action completed");
@@ -223,7 +226,6 @@ function createAdvanceLinkButton(){
     student_view_next = $('<a id = "fjh43jfb" href="#">Next</a>');
 
     student_view_next.css({
-        // 'height': '40px', 
          'position': 'fixed', 
          'bottom':'5%',
          'right':'5%',
@@ -233,10 +235,6 @@ function createAdvanceLinkButton(){
          'padding' : '.5em 1em',
          'border':'transparent',
          'border-radius':'2px',
-        // 'width': '70px',
-        // 'background-color': '#0080ff',
-        // 'opacity': '1',
-        // 'text-align' : 'center',
          'color'     : 'white'
     });
 
@@ -249,4 +247,18 @@ function createAdvanceLinkButton(){
 
 }
 
+/*
+* Functions for accessing members of the tutorial object.
+*/
 
+function get_current_url_obj(tutorialObj) {
+    return tutorialObj.urls[tutorialObj.current_url_num];
+}
+
+function get_current_step_obj(tutorialObj){
+    return tutorialObj.urls[tutorialObj.current_url_num].steps[tutorialObj.current_step_num];
+}
+
+function get_current_url(tutorialObj){
+    return get_current_url_obj().url;
+}
