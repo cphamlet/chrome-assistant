@@ -249,15 +249,17 @@ function createAdvanceLinkButton(){
 /*
 * Functions for accessing members of the tutorial object.
 */
-
+//Returns a url object. Url objects have the url, and their step array
 function get_current_url_obj(tutorialObj) {
     return tutorialObj.urls[tutorialObj.current_url_num];
 }
 
+//Returns a step obj. Step objs hold the sequence of captions
+// and selected elements on a given page
 function get_current_step_obj(tutorialObj){
     return tutorialObj.urls[tutorialObj.current_url_num].steps[tutorialObj.current_step_num];
 }
-
+//Returns the text url of the current webpage
 function get_current_url(tutorialObj){
     return get_current_url_obj().url;
 }
