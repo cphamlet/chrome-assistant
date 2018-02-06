@@ -18,21 +18,25 @@ var tutorial = {
 
 function get_current_url_obj() {
   if (tutorial.urls.length > 0){
-    return tutorial.urls[this.current_url_num];
+    return tutorial.urls[tutorial.current_url_num];
   }else{
     return {"url":"empty"}; //no items in tutorial
   }
 }
 function get_current_step_obj() { 
   if(get_current_url_obj().steps.length > 0){
-    return get_current_url_obj().steps[this.current_step_num];
+    return get_current_url_obj().steps[tutorial.current_step_num];
   }else{
     return {"url":"empty"}; //no items in tutorial
   }
 }
 function insert_new_url_obj(urlObj){ 
-  tutorial.urls.push(urlObj); 
-  tutorial.current_url_num++;
+
+  //We don't want to increment the url when the url is empty 
+  if(tutorial.urls.length>0){  
+    tutorial.current_url_num++;
+  }
+  tutorial.urls.push(urlObj);
   tutorial.current_step_num = 0;
 }
 function insert_new_step_obj(stepObj){ 
@@ -86,7 +90,7 @@ chrome.runtime.onMessage.addListener(
 
         case "get_step_and_increment":
        
-          sendResponse({msg: "Background: sending next element from background script", tutorial:tutorial});
+        sendResponse({msg: "Background: sending next element from background script", tutorial:tutorial});
         incrementStep(tutorial);
         break;
 
@@ -137,6 +141,7 @@ chrome.runtime.onMessage.addListener(
         tutorial.current_url_num = 0;
         load_status = !load_status;
         sendResponse(load_status);
+        console.log(JSON.stringify(tutorial));
         break;
         
         default: 

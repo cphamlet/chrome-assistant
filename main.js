@@ -207,12 +207,11 @@ chrome.runtime.onMessage.addListener(
             student_view_next.remove();
             student_view_next = "null";
             sendResponse("Action completed");
-            return;
         }
 
     chrome.runtime.sendMessage({command: "set-load-status"}, 
             function(response) {
-                    console.log("Set load status to: " + response);
+                    console.log("Setting load status to: " + response);
                  });
     createAdvanceLinkButton();
     sendResponse("Action completed");
