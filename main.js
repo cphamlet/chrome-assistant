@@ -259,7 +259,7 @@ function get_current_url_obj(tutorialObj) {
 function get_current_step_obj(tutorialObj){
     return tutorialObj.urls[tutorialObj.current_url_num].steps[tutorialObj.current_step_num];
 }
-//Returns the text url of the current webpage
+//Returns the text url of the current step
 function get_current_url(tutorialObj){
     return get_current_url_obj().url;
 }
