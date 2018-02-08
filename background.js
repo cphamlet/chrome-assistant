@@ -107,7 +107,7 @@ chrome.runtime.onMessage.addListener(
         incrementStep(tutorial);
         break;
 
-        //This case is only used when recording steps
+        //This case is only used when recording steps. Adds a step to tutorial.
         case "record_action":
         //If the instructor's next step is on a new url:
         if(request.url !=  get_current_url_obj().url){
@@ -120,10 +120,12 @@ chrome.runtime.onMessage.addListener(
         sendResponse({msg: "Background: Message received", enteredText:request.entered_text});
         break;
 
+        //Sends the tutorial object to the content script
         case "save":
         sendResponse(JSON.stringify(tutorial));
         break; 
 
+        //Deletes the recording
         case "clear":
         tutorial = { 
           name : "", //Plaintext, instructor specified
