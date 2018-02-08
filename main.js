@@ -48,7 +48,7 @@ function retrieveItemfromBackgroundScript(){
                 }); //end first reponse function
     }
 
-//Creates the button for the "next" button 
+//Creates the button for the "save" button 
 function create_popup_box(top, left, borderedElement, popup_ID){
 
 var new_offset = {top:top, left:left};
@@ -57,9 +57,9 @@ var new_offset = {top:top, left:left};
     var created_element = $('<div class = "4k3jfn" id ="'+popup_ID+'" ></div>');
     var editable_text = $('<div contenteditable = "true" class ="56sdjfh"></div>');
     var save_button = $('<div class = "ck42jr"></div>');
-    var button_text = $('<span class = "34ifun">Save</span>');
+    var button_text = $('<p class = "34ifun">Save</p>');
     save_button.append(button_text);
-
+    
     editable_text.css({
         'background-color':'#ededed',
         'height'    : '40px',
@@ -67,17 +67,36 @@ var new_offset = {top:top, left:left};
         'color'     : 'black',
         'border'    :  'black solid'
     });
-    save_button.css({
-        'background-color' : '#00826c',
-        'color'         : "white",
-        'width'         : "75px",
-        'height'        :"30px",
-        'margin-top'    :"3px"   
-    });
+    //This function sets the save_button in the student view's css
+    let set_save_button_css_default = function(save_button){
+        save_button.css({
+            'background-color' : '#00826c',
+            'border-radius' : '0.4em',
+            'color'         : "white",
+            'width'         : "75px",
+            'height'        :"30px",
+            'margin-top'    :"3px"   
+        });  
+    }  
+    set_save_button_css_default(save_button);
+
+    //Hover functionality. 
+    save_button.hover(function(){
+        save_button.css({
+            'background-color' : '#00705e',
+            'border-radius' : '0.4em',
+            'color'         : "white",
+            'width'         : "75px",
+            'height'        :"30px",
+            'margin-top'    :"3px"   
+        });
+        }, function(){set_save_button_css_default(save_button);}
+    );
 
     button_text.css({
-        'margin': '10px 10px',
-        'font-size': '22px'
+        'line-height': '28px',
+        'font-size': '18px',
+        'text-align': 'center'
     });
 
     created_element.append(editable_text);
@@ -145,8 +164,6 @@ $(document).keydown(function(event) {
         unborderedElementPointerHTML = elementOnMouseOver.outerHTML;
             if(elementOnMouseOver.style.border == "" && elementOnMouseOver.tagName != "input"){
     			elementOnMouseOver.style.border = "thick solid green";
-
-                
                 var edit_box = create_popup_box($(elementOnMouseOver).offset().top, $(elementOnMouseOver).offset().left+50, elementOnMouseOver, popup_ID);
                }
         }
