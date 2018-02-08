@@ -1,0 +1,17 @@
+#loadR{
+	float: left;
+    width: 100%;
+}
+#startR{
+	float: left;
+    width: 100%;
+}
+
+#newRecordingSetUp{
+	/*visibility: hidden;*/
+}
+
+#form {
+	    position: absolute;
+    top: 85px;
+}

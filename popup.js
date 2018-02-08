@@ -1,4 +1,31 @@
 $( document ).ready(function() {
+    
+    
+    // BRANDON
+		$("#newRecordingSetup").hide();
+		function showNewRecording(){
+			//send data to server
+			$("#main_screen").hide();
+			// console.log('hey');
+			$("#newRecordingSetup").show();
+		}
+
+		$("#startR").on("click", function(){
+			showNewRecording();
+		});
+		$("#submitR").on("click", function(){
+			var tutorialName = $('#formName').val()
+			// console.log($('#formName').val());
+			chrome.runtime.sendMessage({command: "addName", tutorial_name: tutorialName},
+				function(response) {
+	                    console.log(response);
+	                    
+	            });
+		});
+
+
+
+	// BRANDON
 
 	function removeLoginScreen(){
 		//send data to server

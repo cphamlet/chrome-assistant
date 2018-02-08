@@ -7,6 +7,7 @@
   <head>
     <title>Getting Started Extension's Popup</title>
     <link rel="stylesheet" href="css/foundation.min.css">
+    <link rel="stylesheet" href="css/brandon.css">
     <style type="text/css">
       body {
         margin: 10px;
@@ -41,18 +42,18 @@
 
     <script src="./assets/js/jquery.js"></script>
     <script src="./assets/js/foundation.min.js"></script>
-    <script src="popup.js"></script>
+   <!--  <script src="popup.js"></script> -->
   </head>
 
   <body>
     <h1>Web Tutorials</h1>
-    <div clas="container" id="login_screen">
+    <!-- <div clas="container" id="login_screen">
     <form>
     Username: <input type="text" name="user" value="">
     Password: <input type="text" name="pass" value="">
       <button data-addCart class="button" id="login"><span>Login</span></button>
   </form>
-    </div>
+    </div> -->
     <div class="container" id="main_screen">
       <h2>Instructor View</h2>
       <button data-addCart type="button" class="button" id="save_record"><span>Save recording</span></button><br>
@@ -60,6 +61,20 @@
       <br>
       <h2>Student View</h2> 
       <button data-addCart type="button" class="button" id="load_record"><span>Load Record</span></button>
+      <h2>Brandon's View</h2> 
+      <button data-addCart type="button" class="button" id="startR"><span>Start New Recording</span></button>
+      <button data-addCart type="button" class="button" id="loadR"><span>Edit/Load</span></button>
+    </div>
+
+
+    <div class="container" id="newRecordingSetup">
+      <h3>Set Up Your Tutorial: </h3> 
+      <form id='form'>
+        <input type="text" name="tutorialName" placeholder="Tutorial Name" id='formName'>
+        <button data-addCart type="button" class="button" id="submitR"><span>Start Recording!</span></button>
+        <button data-addCart type="button" class="button" id="submitR" disabled><span>End Recording</span></button>
+      </form>
     </div>
   </body>
+   <script src="popup.js"></script>
 </html>

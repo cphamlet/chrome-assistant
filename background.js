@@ -97,6 +97,15 @@ chrome.runtime.onMessage.addListener(
                 "from the extension");
 
     switch(request.command){
+            
+            
+        case "addName": 
+        console.log('made it this far');
+        // console.log(request.tutorial_name); 
+         tutorial.name = request.tutorial_name;
+        sendResponse({msg: "adding name", tutorial:tutorial});  
+        break;
+            
         case "peek": 
         sendResponse({msg: "Background: sending top element from background script", tutorial:tutorial});  
         break;
