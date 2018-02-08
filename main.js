@@ -129,8 +129,8 @@ var new_offset = {top:top, left:left};
 
 
 $(document).keydown(function(event) {
-    switch(event.which) {
-        case 37: // left
+
+        if(event.keyCode == 81 && event.ctrlKey){ // Ctrl + Q
         //This popup id is the unique ID for all of the SAVE button popups. 
                 var popup_ID = "4iufbw";
                 //If a popup already exists, delete the old one. 
@@ -148,10 +148,8 @@ $(document).keydown(function(event) {
 
                 
                 var edit_box = create_popup_box($(elementOnMouseOver).offset().top, $(elementOnMouseOver).offset().left+50, elementOnMouseOver, popup_ID);
-   			}
-                break;
-
-    }
+               }
+        }
 
 });
 
