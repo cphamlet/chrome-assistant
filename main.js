@@ -31,15 +31,15 @@ function retrieveItemfromBackgroundScript(){
                         //Message asks background if you are on the correct link
                         chrome.runtime.sendMessage({command: "peek"}, function(response) {
                             //If urls match, load the html 
-                            console.log(JSON.stringify(response.tutorial));
+                            var tutorial = response.tutorial;
 
-                            if(window.location["href"] == get_current_url_obj(response.tutorial).url) {
+                            if(window.location["href"] == get_current_step(tutorial).url) {
                                 //Message asks background for html and moves to next item. 
-                                chrome.runtime.sendMessage({command: "get_step_and_increment"}, function(responseShift) {
+                                //TODO: Present the user with choice instead of going with 0th edge 
+                                chrome.runtime.sendMessage({command: "get_next", next_id:tutorial.nodes[tutorial.current_id].edges[0]}, function(responseShift) {
                                     if(responseShift==null){
                                         alert("Out of steps!");
                                     }
-                                    console.log("shifted:" + JSON.stringify(responseShift.tutorial));
                                     loadHTMLContent(responseShift);
                                 }); //end of shift command msg 
                             }//end of null check
@@ -172,10 +172,11 @@ $(document).keydown(function(event) {
 
 function goToNextURL(){
             chrome.runtime.sendMessage({command: "peek"}, function(response) {
-
+            console.log(response.tutorial);
+            console.log(get_current_step(response.tutorial));
             //This sends the user to the next page if the urls do not match
-            if(typeof(response.tutorial) != 'undefined' && window.location["href"] != get_current_url_obj(response.tutorial).url) {
-                window.location = get_current_url_obj(response.tutorial).url;
+            if(typeof(response.tutorial) != 'undefined' && window.location["href"] != get_current_step(response.tutorial).url) {
+                window.location = get_current_step(response.tutorial).url;
             }else{
                    loadHTMLContent(response);
             }
@@ -187,7 +188,7 @@ function goToNextURL(){
 function loadHTMLContent(responseObj){
             console.log(JSON.stringify(responseObj.tutorial));
             let instructor_text = $('<p id = "sdajck3" href="#">Text box</p>');
-            instructor_text[0].innerHTML = get_current_step_obj(responseObj.tutorial).caption;
+            instructor_text[0].innerHTML = get_current_step(responseObj.tutorial).caption;
             instructor_text.css({
                  'position': 'fixed', 
                  'bottom':'5%',
@@ -206,14 +207,14 @@ function loadHTMLContent(responseObj){
             //console.log("Searching for element: " 
             var all_elements = document.getElementsByTagName("*");
             for (var i = 0, element; element = all_elements[i++];) {
-                if(element.outerHTML == get_current_step_obj(responseObj.tutorial).element_html){
+                if(element.outerHTML == get_current_step(responseObj.tutorial).element_html){
                     element.style.border = "thick solid green";
                 }
             }
 
 }
 
-//This listens to the popup script
+//This listens to the popup script 
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
     if (request.command == "load"){
@@ -234,6 +235,7 @@ chrome.runtime.onMessage.addListener(
 });
 
 function createAdvanceLinkButton(){
+    //Removes the next button if it already exists
     if(student_view_next != "null"){
             student_view_next.remove();
     }
@@ -264,17 +266,20 @@ function createAdvanceLinkButton(){
 /*
 * Functions for accessing members of the tutorial object.
 */
-//Returns a url object. Url objects have the url, and their step array
-function get_current_url_obj(tutorialObj) {
-    return tutorialObj.urls[tutorialObj.current_url_num];
+function get_current_step(tutorialDAG){
+    return tutorialDAG.nodes[tutorialDAG.current_id];
 }
+// //Returns a url object. Url objects have the url, and their step array
+// function get_current_url_obj(tutorialObj) {
+//     return tutorialObj.urls[tutorialObj.current_url_num];
+// }
 
-//Returns a step obj. Step objs hold the sequence of captions
-// and selected elements on a given page
-function get_current_step_obj(tutorialObj){
-    return tutorialObj.urls[tutorialObj.current_url_num].steps[tutorialObj.current_step_num];
-}
-//Returns the text url of the current step
-function get_current_url(tutorialObj){
-    return get_current_url_obj().url;
-}
+// //Returns a step obj. Step objs hold the sequence of captions
+// // and selected elements on a given page
+// function get_current_step_obj(tutorialObj){
+//     return tutorialObj.urls[tutorialObj.current_url_num].steps[tutorialObj.current_step_num];
+// }
+// //Returns the text url of the current step
+// function get_current_url(tutorialObj){
+//     return get_current_url_obj().url;
+// }
