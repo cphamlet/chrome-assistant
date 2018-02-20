@@ -8,10 +8,8 @@ var rS = new recordingStream();
 function recordingStream(){
   this.steps = [];
   this.name = "";
-  this.current_step_index = 0; 
   this.insertStep = function(step_obj /*{id: "random generated id", name: "", url: "", element_html: "", caption: ""}*/){
     this.steps.push(step_obj); //Adds step obj as a node into the steps array
-
     if(this.steps.length > 1){
         //Gives the previously inserted node an outgoing edge to this newly inserted node.
         this.steps[this.steps.length-2].insertEdge(step_obj.id);
@@ -20,7 +18,6 @@ function recordingStream(){
   this.clear = function(){
     this.steps = [];
     this.name = "";
-    this.current_step_index = 0;
   } 
 }
 
