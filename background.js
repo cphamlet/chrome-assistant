@@ -50,7 +50,7 @@ function DAG() {
         return;
       }
       this.nodes[inserted_node.id] = inserted_node;
-      this.addEdge(parent_id, inserted_node.id);
+      this.addLink(parent_id, inserted_node.id);
     }
      
   }
