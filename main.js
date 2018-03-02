@@ -29,21 +29,15 @@ function retrieveItemfromBackgroundScript(){
                      }else{
                         createAdvanceLinkButton();
                         //Message asks background if you are on the correct link
-                        chrome.runtime.sendMessage({command: "peek"}, function(response) {
-                            //If urls match, load the html 
-                            var tutorial = response.tutorial;
 
+                        get_dag(function(tutorial){
+                            console.log(tutorial);
                             if(window.location["href"] == get_current_step(tutorial).url) {
                                 //Message asks background for html and moves to next item. 
-                                //TODO: Present the user with choice instead of going with 0th edge 
-                                chrome.runtime.sendMessage({command: "get_next", next_id:tutorial.nodes[tutorial.current_id].edges[0]}, function(responseShift) {
-                                    if(responseShift==null){
-                                        alert("Out of steps!");
-                                    }
-                                    loadHTMLContent(responseShift);
-                                }); //end of shift command msg 
+                                loadHTMLContent(tutorial);
                             }//end of null check
-                        }); //end peek send msg
+                        });
+                           
                      } //end else
                 }); //end first reponse function
     }
@@ -129,7 +123,6 @@ function create_popup_box(top, left, borderedElement, popup_ID){
     $(created_element).draggable({
         // //start: function(){}
         stop: function (){
-            console.log("trident");
            //If when you stop dragging, the title isn't full give focus
             if($(title_text).val().length == 0){
                 $(title_text).focus();
@@ -141,7 +134,6 @@ function create_popup_box(top, left, borderedElement, popup_ID){
         });
     //Don't let the user drag when either text box is in focus
     $(title_text).add(editable_text).focusin(function(){
-        console.log("enter");
         $(created_element).draggable({
              cancel: ".editable"
              });
@@ -182,7 +174,7 @@ function create_popup_box(top, left, borderedElement, popup_ID){
                   //This replace with function, removes the element with the green border if one already exists. 
                   $(elementOnMouseOver).replaceWith($(unborderedElementPointerHTML).prop('outerHTML'));
               }
-           chrome.runtime.sendMessage({command: "record_action", element_html:unborderedElementPointerHTML, entered_text:$(editable_text).text(), url:window.location["href"]}, 
+           chrome.runtime.sendMessage({command: "record_action", element_html:unborderedElementPointerHTML, entered_text:$(editable_text).text(), title_text:$(title_text).val(), url:window.location["href"]}, 
             function(response) {
                 //    alert(response.msg +" : "+ response.enteredText + " : "+ window.location["href"]);
             });
@@ -218,24 +210,32 @@ $(document).keydown(function(event) {
 });
 
 function goToNextURL(){
-            chrome.runtime.sendMessage({command: "peek"}, function(response) {
-            console.log(response.tutorial);
-            console.log(get_current_step(response.tutorial));
-            //This sends the user to the next page if the urls do not match
-            if(typeof(response.tutorial) != 'undefined' && window.location["href"] != get_current_step(response.tutorial).url) {
-                window.location = get_current_step(response.tutorial).url;
-            }else{
-                   loadHTMLContent(response);
-            }
 
-         });
+            // //TODO: Present the user with choice instead of going with 0th edge 
+                get_dag(function(tutorial){
+
+                    chrome.runtime.sendMessage({command: "get_next", next_id:tutorial.nodes[tutorial.current_id].edges[0]}, function(response) {
+                        tutorial = response.tutorial;
+                        if(response==null){
+                            alert("Out of steps!");
+                        }
+                   if(typeof(response.tutorial) != 'undefined' && window.location["href"] != get_current_step(response.tutorial).url) {
+                        window.location = get_current_step(response.tutorial).url;
+                    }else{
+                           loadHTMLContent(tutorial);
+                    }
+                          
+                    }); 
+                });
+
+
 }
 
 //Displays border on webpage from element stored in background page. 
-function loadHTMLContent(responseObj){
-            console.log(JSON.stringify(responseObj.tutorial));
+function loadHTMLContent(tutorial){
+           
             let instructor_text = $('<p id = "sdajck3" href="#">Text box</p>');
-            instructor_text[0].innerHTML = get_current_step(responseObj.tutorial).caption;
+            instructor_text[0].innerHTML = get_current_step(tutorial).caption;
             instructor_text.css({
                  'position': 'fixed', 
                  'bottom':'5%',
@@ -254,7 +254,7 @@ function loadHTMLContent(responseObj){
             //console.log("Searching for element: " 
             var all_elements = document.getElementsByTagName("*");
             for (var i = 0, element; element = all_elements[i++];) {
-                if(element.outerHTML == get_current_step(responseObj.tutorial).element_html){
+                if(element.outerHTML == get_current_step(tutorial).element_html){
                     element.style.border = "thick solid green";
                 }
             }
@@ -265,12 +265,25 @@ function loadHTMLContent(responseObj){
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
     if (request.command == "load"){
-
+    
         if(student_view_next != "null"){
+            console.log("not null");
             student_view_next.remove();
             student_view_next = "null";
             sendResponse("Action completed");
         }
+
+            //If urls match, load the html 
+            get_dag(function(tutorial){
+                console.log(tutorial);
+                if(window.location["href"] != get_current_step(tutorial).url) {
+                    //Message asks background for html and moves to next item. 
+                    window.location = get_current_step(tutorial).url;
+                   
+                }//end of null check
+                loadHTMLContent(tutorial);
+            });
+
 
     chrome.runtime.sendMessage({command: "set-load-status"}, 
             function(response) {
@@ -287,6 +300,8 @@ function createAdvanceLinkButton(){
             student_view_next.remove();
     }
     student_view_next = $('<a id = "fjh43jfb" href="#">Next</a>');
+    var student_view_prev = $('<a id = "fjh43jfb" href="#">Prev</a>');
+    student_view_prev.appendTo('body');
 
     student_view_next.css({
          'position': 'fixed', 
@@ -303,10 +318,21 @@ function createAdvanceLinkButton(){
 
     student_view_next.appendTo('body');
 
-    student_view_next.click(function(){
+    student_view_next.click(function(e){
+        e.preventDefault();
         goToNextURL();
     });
+    // student_view_prev.click(function(){
+    //     chrome.runtime.sendMessage({command: "peek"}, function(response) {
+    //         console.log(response.tutorial);
+    //         console.log(get_current_step(response.tutorial));
+    //         //This sends the user to the next page if the urls do not match
+    //         chrome.runtime.sendMessage({command:"get_prev"}, function(response){
+    //             console.log(response.prev_node);
+    //         });
 
+    //      });
+    // });
 
 }
 
@@ -316,17 +342,10 @@ function createAdvanceLinkButton(){
 function get_current_step(tutorialDAG){
     return tutorialDAG.nodes[tutorialDAG.current_id];
 }
-// //Returns a url object. Url objects have the url, and their step array
-// function get_current_url_obj(tutorialObj) {
-//     return tutorialObj.urls[tutorialObj.current_url_num];
-// }
 
-// //Returns a step obj. Step objs hold the sequence of captions
-// // and selected elements on a given page
-// function get_current_step_obj(tutorialObj){
-//     return tutorialObj.urls[tutorialObj.current_url_num].steps[tutorialObj.current_step_num];
-// }
-// //Returns the text url of the current step
-// function get_current_url(tutorialObj){
-//     return get_current_url_obj().url;
-// }
+//This is an asynchronous function
+function get_dag(fn){
+    chrome.runtime.sendMessage({command: "peek"}, function(response) {
+       fn(response.tutorial);
+    });
+} //end peek send msg

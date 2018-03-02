@@ -34,7 +34,8 @@ function DAG() {
   this.nodes = {};
   this.root_id = "";
   this.current_id = "";
-
+  //A path of the nodes you are on.
+  this.current_path = [];
   /*Functions*/
   this.addChild = function( parent_id /*<-ID to link from value = {id: "", name: "", url: "", element_html: "", caption: ""}*/, 
                   inserted_node ) {
@@ -42,8 +43,7 @@ function DAG() {
     //If the DAG is empty, there is no parent. Insert first node.
     if(Object.keys(this.nodes).length == 0){
       this.nodes[inserted_node.id] = inserted_node;
-    }else{  
-
+    }else {
       //If the item was already inserted. Don't insert again!
       if(this.nodes[inserted_node.id]){
         console.log("Cannot insert the same item twice.");
@@ -86,8 +86,16 @@ function DAG() {
           this.nodes[parent_id].insertEdge(inserted_steam_id);
       }
   
+  //Pops item off current path, gets prev node. 
+  this.get_prev = function(){
+    let prev_node = this.current_path.pop();
+    this.current_id = prev_node.id;
+    return prev_node;
+  }
 
   this.get_next = function(next_id){
+    //Adds id into "visited" path. Used for going to previous node
+     this.current_path.push(this.current_id);
      let selected_id_is_present_in_edges = false;
      //Iterates over all edges in current node
      this.nodes[this.current_id].edges.forEach(function(edge){
@@ -112,6 +120,7 @@ function DAG() {
     this.nodes = {};
     this.current_id = "";
     this.root_id = "";
+    this.current_path = [];
   }
 
 }
@@ -135,6 +144,9 @@ function Node(name, url, caption, element_html){
      this.edges.push(node_id);
   }
 }
+Node.prototype.toJSON = function (key){
+  return {name: this.name, url: this.url, element_html:this.element_html, caption:this.caption, id:this.id, edges:this.edges }; // everything that needs to get stored
+};
 
 //This global variable is meant to maintain the button state across refreshed pages. For example, when you
 //advance to the next link, you will maintain the button on the bottom right.  
@@ -162,17 +174,27 @@ chrome.runtime.onMessage.addListener(
         break;
 
         case "get_next":
-        sendResponse({msg: "Background: sending next element from background script", tutorial:dag});
         dag.get_next(request.next_id);
+        sendResponse({msg: "Background: sending next element from background script", tutorial:dag});
+
+        console.log("got next");
         break;
 
+        case "get_prev":
+        let g = dag.get_prev();
+        console.log(g);
+        sendResponse({msg:"", prev_node:dag.get_prev()});
         //returns outgoing edges of the current node. 
+
+        break;
+
         case "get_options":
         sendResponse({msg: "", options:dag.nodes[dag.current_id].edges});
         break;
         //This case is only used when recording steps. Adds a step to tutorial.
         case "record_action":
-        rS.insertStep( new Node("TODO: Change to variable", request.url, request.entered_text, request.element_html));
+        let inserted_node = new Node(request.title_text, request.url, request.entered_text, request.element_html);
+        rS.insertStep( inserted_node );
         sendResponse({msg: "Background: Message received", enteredText:request.entered_text});
         break;
 
