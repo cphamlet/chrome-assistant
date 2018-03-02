@@ -51,27 +51,50 @@ function retrieveItemfromBackgroundScript(){
 //Creates the button for the "save" button 
 function create_popup_box(top, left, borderedElement, popup_ID){
 
-var new_offset = {top:top, left:left};
-    var new_width = 200;
-    var new_height = 50;
-    var created_element = $('<div class = "4k3jfn" id ="'+popup_ID+'" ></div>');
-    var editable_text = $('<div contenteditable = "true" class ="56sdjfh"></div>');
-    var save_button = $('<div class = "ck42jr"></div>');
-    var button_text = $('<p class = "34ifun">Save</p>');
+    var new_offset = {top:top, left:left};
+    //Title text is the title input box above the main text box
+    var title_text = $('<input type="text" placeholder="Title" class ="editable"></input>');
+    var created_element = $('<div class = "" id ="'+popup_ID+'" ></div>');
+    //Editable is the main description text box
+    var editable_text = $('<div contenteditable = "true" placeholder="Description" class ="editable"></div>');
+    var save_button = $('<div class = ""></div>');
+    var button_text = $('<p class = "">Save</p>');
     save_button.append(button_text);
-    
+    //TODO: Remove pixel specifications and go with a relative unit (e.g. percent, em)
+    created_element.css({
+        'background-color':'rgba(0,0,0,0.6)',
+        'padding'         : '15px',
+        'border-radius'   : '10px',
+        'width'           : '200px'
+    });
     editable_text.css({
         'background-color':'#ededed',
-        'height'    : '40px',
+        'height'    : 'auto',
+        'min-height': '35px',
         'font-size' : '12px',
         'color'     : 'black',
-        'border'    :  'black solid'
+        'border'    : 'black solid',
+        'padding'   : '4px',
+        'border-radius':'8px'
     });
+    title_text.css({
+        'background-color':'#ededed',
+        'height'    : '14x',
+        'width'     :'188px',
+        'max-height': '20px',
+        'font-size' : '16px',
+        'color'     : 'black',
+        'border'    :  'black solid',
+        'margin-bottom': '0.4em',
+        'padding'   :   '4px',
+        'border-radius': '8px'
+    })
+
     //This function sets the save_button in the student view's css
-    let set_save_button_css_default = function(save_button){
+    var set_save_button_css_default = function(save_button){
         save_button.css({
-            'background-color' : '#00826c',
-            'border-radius' : '0.4em',
+            'background-color' : 'rgb(18, 226, 169)',
+            'border-radius' : '1.4em',
             'color'         : "white",
             'width'         : "75px",
             'height'        :"30px",
@@ -83,13 +106,13 @@ var new_offset = {top:top, left:left};
     //Hover functionality. 
     save_button.hover(function(){
         save_button.css({
-            'background-color' : '#00705e',
-            'border-radius' : '0.4em',
+            'background-color' : 'rgb(18, 175, 114)',
+            'border-radius' : '1.4em',
             'color'         : "white",
             'width'         : "75px",
             'height'        :"30px",
             'margin-top'    :"3px"   
-        });
+        });  
         }, function(){set_save_button_css_default(save_button);}
     );
 
@@ -98,21 +121,41 @@ var new_offset = {top:top, left:left};
         'font-size': '18px',
         'text-align': 'center'
     });
-
+    //This combines all the elements under a unified div
+    created_element.append(title_text);
     created_element.append(editable_text);
     created_element.append(save_button);
-    var newElement = $(created_element).width(new_width)
-        .height(new_height)
-        .draggable({
-        cancel: "text",
-        start: function (){
-          $('#18xf56').focus();
-        },
+
+    $(created_element).draggable({
+        // //start: function(){}
         stop: function (){
-          $('#18xf56').focus();
+            console.log("trident");
+           //If when you stop dragging, the title isn't full give focus
+            if($(title_text).val().length == 0){
+                $(title_text).focus();
+            }else{
+                $(editable_text).focus();
+            }
         } 
-        
-        })
+       
+        });
+    //Don't let the user drag when either text box is in focus
+    $(title_text).add(editable_text).focusin(function(){
+        console.log("enter");
+        $(created_element).draggable({
+             cancel: ".editable"
+             });
+
+    });
+    $(title_text).add(editable_text).focusout(function(){
+        $(created_element).draggable({
+             cancel: ""
+        });
+
+    });
+
+    //Append the created element to the body
+    $(created_element)
      .resizable()
         .css({
         'position'          : 'absolute',
@@ -123,8 +166,12 @@ var new_offset = {top:top, left:left};
 
 
         //When you click on the textbox, give keyboard focus. 
-        $(created_element).click(function(){
+        $(editable_text).click(function(){
             $(editable_text).focus();
+        });
+        //When you click on the textbox, give keyboard focus. 
+        $(title_text).click(function(){
+            $(title_text).focus();
         });
 
 
