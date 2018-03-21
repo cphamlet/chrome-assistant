@@ -31,6 +31,7 @@ recordingStream.prototype.toJSON = function (key){
 //This is a DAG data structure
 function DAG() {
   /*Fields*/
+  this.dagName = "";
   this.nodes = {};
   this.root_id = "";
   this.current_id = "";
@@ -162,8 +163,8 @@ chrome.runtime.onMessage.addListener(
         case "addName": 
         console.log('made it this far');
         // console.log(request.tutorial_name); 
-         tutorial.name = request.tutorial_name;
-        sendResponse({msg: "adding name", tutorial:tutorial});  
+        // DAG.dagName = request.tutorial_name;
+        sendResponse({msg: "adding name", tutorial:dag});  
         break;
             
         case "peek": 

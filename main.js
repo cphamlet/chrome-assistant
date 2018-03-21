@@ -20,6 +20,7 @@ $(document).ready(function() {
     retrieveItemfromBackgroundScript();
 });
 
+
 function retrieveItemfromBackgroundScript(){
       chrome.runtime.sendMessage({command: "get-load-status"}, 
                 function(response) {
@@ -231,6 +232,29 @@ chrome.runtime.onMessage.addListener(
                  });
     createAdvanceLinkButton();
     sendResponse("Action completed");
+    }else if(request.command == "hotKey"){
+        //work here
+        $(document).addEventListener("keydown", function(event){
+            if(event.keyCode == 81 && event.ctrlKey){ // Ctrl + Q
+        //This popup id is the unique ID for all of the SAVE button popups. 
+                var popup_ID = "4iufbw";
+                //If a popup already exists, delete the old one. 
+                if(document.body.contains( document.getElementById(popup_ID) )){
+                    if(unborderedElementPointerHTML!=null) {
+                        //This replace with function, removes the element with the green border if one already exists. 
+                        $(elementOnMouseOver).replaceWith($(unborderedElementPointerHTML).prop('outerHTML'));
+                    }
+                    document.getElementById(popup_ID).remove();
+                }
+                elementOnMouseOver = document.elementFromPoint(x, y);
+                unborderedElementPointerHTML = elementOnMouseOver.outerHTML;
+                if(elementOnMouseOver.style.border == "" && elementOnMouseOver.tagName != "input"){
+                    elementOnMouseOver.style.border = "thick solid green";
+                    var edit_box = create_popup_box($(elementOnMouseOver).offset().top, $(elementOnMouseOver).offset().left+50, elementOnMouseOver, popup_ID);
+                }
+        }
+        }
+        
     }
 });
 
