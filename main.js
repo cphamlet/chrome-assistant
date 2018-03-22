@@ -8,14 +8,15 @@ var x = 0;
 var y = 0;
 //This element is the element that currently have a border around it when it is selected. 
 var unborderedElementPointerHTML = null;
+//The x and y coordinates of the mouse has to be constantly maintained in order to select an html element.
 $(window).mouseover(function(e) {
     x = e.clientX, y = e.clientY;
 });
 
 
 var student_view_next = "null";
-//This message asks the background if you are in "load mode"<p>Since the index is zero-based, the first list item is returned:</p>
 
+//This message asks the background if you are in "load mode"
 $(document).ready(function() {
     retrieveItemfromBackgroundScript();
 });
@@ -322,17 +323,6 @@ function createAdvanceLinkButton(){
         e.preventDefault();
         goToNextURL();
     });
-    // student_view_prev.click(function(){
-    //     chrome.runtime.sendMessage({command: "peek"}, function(response) {
-    //         console.log(response.tutorial);
-    //         console.log(get_current_step(response.tutorial));
-    //         //This sends the user to the next page if the urls do not match
-    //         chrome.runtime.sendMessage({command:"get_prev"}, function(response){
-    //             console.log(response.prev_node);
-    //         });
-
-    //      });
-    // });
 
 }
 
