@@ -2,12 +2,12 @@ $( document ).ready(function() {
 
 		$("#submitR").on("click", function(){
 			console.log("submitR click");
-			// var tutorialName = $('#formName').val();
-			// // console.log($('#formName').val());
-			// chrome.runtime.sendMessage({command: "addName", tutorial_name: tutorialName},
-			// 	function(response) {
-	        //           console.log(response);         
-	        //  });
+			var tutorialName = $('#formName').val();
+			// console.log($('#formName').val());
+			chrome.runtime.sendMessage({command: "addName", tutorial_name: tutorialName},
+				function(response) {
+	                  console.log(response);         
+	         });
 				$("#endR").prop('disabled', false);
 				$(this).prop('disabled', true);
 				// window.close();
