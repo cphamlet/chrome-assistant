@@ -147,9 +147,9 @@ var new_offset = {top:top, left:left};
 
 };
 
-
-$(document).keydown(function(event) {
-
+//detect element selection is an event listener, which we can add and remove. 
+var detect_element_selection = function(event) {
+        
         if(event.keyCode == 81 && event.ctrlKey){ // Ctrl + Q
         //This popup id is the unique ID for all of the SAVE button popups. 
                 var popup_ID = "4iufbw";
@@ -168,8 +168,7 @@ $(document).keydown(function(event) {
                 var edit_box = create_popup_box($(elementOnMouseOver).offset().top, $(elementOnMouseOver).offset().left+50, elementOnMouseOver, popup_ID);
                }
         }
-
-});
+}
 
 function goToNextURL(){
             chrome.runtime.sendMessage({command: "peek"}, function(response) {
@@ -218,44 +217,30 @@ function loadHTMLContent(responseObj){
 //This listens to the popup script 
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
-    if (request.command == "load"){
-
+      switch(request.command){
+        case "load":
+            
         if(student_view_next != "null"){
             student_view_next.remove();
             student_view_next = "null";
             sendResponse("Action completed");
         }
 
-    chrome.runtime.sendMessage({command: "set-load-status"}, 
-            function(response) {
-                    console.log("Setting load status to: " + response);
-                 });
-    createAdvanceLinkButton();
-    sendResponse("Action completed");
-    }else if(request.command == "hotKey"){
-        //work here
-        $(document).addEventListener("keydown", function(event){
-            if(event.keyCode == 81 && event.ctrlKey){ // Ctrl + Q
-        //This popup id is the unique ID for all of the SAVE button popups. 
-                var popup_ID = "4iufbw";
-                //If a popup already exists, delete the old one. 
-                if(document.body.contains( document.getElementById(popup_ID) )){
-                    if(unborderedElementPointerHTML!=null) {
-                        //This replace with function, removes the element with the green border if one already exists. 
-                        $(elementOnMouseOver).replaceWith($(unborderedElementPointerHTML).prop('outerHTML'));
-                    }
-                    document.getElementById(popup_ID).remove();
-                }
-                elementOnMouseOver = document.elementFromPoint(x, y);
-                unborderedElementPointerHTML = elementOnMouseOver.outerHTML;
-                if(elementOnMouseOver.style.border == "" && elementOnMouseOver.tagName != "input"){
-                    elementOnMouseOver.style.border = "thick solid green";
-                    var edit_box = create_popup_box($(elementOnMouseOver).offset().top, $(elementOnMouseOver).offset().left+50, elementOnMouseOver, popup_ID);
-                }
-        }
-        }
+        chrome.runtime.sendMessage({command: "set-load-status"}, 
+                function(response) {
+                        console.log("Setting load status to: " + response);
+                    });
+        createAdvanceLinkButton();
+        sendResponse("Action completed");
+
+        break;
         
-    }
+        case "hotKey":
+        console.log("entering hotKey command");
+        document.addEventListener("keydown", detect_element_selection);
+        break;
+
+      }
 });
 
 function createAdvanceLinkButton(){
