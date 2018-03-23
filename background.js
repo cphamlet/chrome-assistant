@@ -161,9 +161,7 @@ chrome.runtime.onMessage.addListener(
             
             
         case "addName": 
-        console.log('made it this far');
-        // console.log(request.tutorial_name); 
-        // DAG.dagName = request.tutorial_name;
+        dag.dagName = request.tutorial_name;
         sendResponse({msg: "adding name", tutorial:dag});  
         break;
             
