@@ -29,42 +29,41 @@ $( document ).ready(function() {
         		});
 		});	
 
-});
+
 	//Save record button sends to server
 $("#save_record").click(function(){
 	//send data to background script
 	//Retrieves all of data in popup. 
 	console.log("save record click");
 	chrome.runtime.sendMessage({command: "save"}, 
-			function(response) {
-					console.log(response);
-			});
-});
+	            function(response) {
+	                    console.log(response);
+	            });
+	});
 
 
 //Clear button clears list
-$("#clear_record").click(function(){
+	$("#clear_record").click(function(){
 	//send data to server
 	chrome.runtime.sendMessage({command: "clear"}, 
-			function(response) {
-					console.log(response);
-			});
-});
+	            function(response) {
+	                    console.log(response);
+	            });
+	});
 
-//this is how to send messages to main.js... say chrome.tabs not chrome.runtime.sendMessage
 //Loads the record into the frame
-$("#load_record").click(function(){
+	$("#load_record").click(function(){
 	//send data to server
 	console.log("Entering load record function");
 		  chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
-		 // since only one tab should be active and in the current window at once
-		 // the return variable should only have one entry
-			 chrome.tabs.sendMessage(arrayOfTabs[0].id, {command:'load'}, function(response) {	
-				console.log('Start action sent');
+		     // since only one tab should be active and in the current window at once
+		     // the return variable should only have one entry
+		     chrome.tabs.sendMessage(arrayOfTabs[0].id, {command:'load'}, function(response) {
+			    console.log('Start action sent');
 			});//end send message
-	  });//end query
+		  });//end query
 
-});//end click
+  });//end click
 
 $("#startR").on("click", function(){
 	console.log("startR click");
@@ -73,11 +72,7 @@ $("#startR").on("click", function(){
 	 });
 });
 
-
-
-
-
-
+});
 
 
 
