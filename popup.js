@@ -1,16 +1,40 @@
 $( document ).ready(function() {
 
-	function removeLoginScreen(){
-		//send data to server
-		$("#main_screen").show();
-		$("#login_screen").hide();
-	}
+		$("#submitR").on("click", function(){
+			console.log("submitR click");
+			// var tutorialName = $('#formName').val();
+			// // console.log($('#formName').val());
+			// chrome.runtime.sendMessage({command: "addName", tutorial_name: tutorialName},
+			// 	function(response) {
+	        //           console.log(response);         
+	        //  });
+				$("#endR").prop('disabled', false);
+				$(this).prop('disabled', true);
+				// window.close();
 
-	$("#login").click(removeLoginScreen());
-		//Save record button sends to server
-	$("#save_record").click(function(){
-		//Send data to background script
-		//Retrieves all of data in popup. 
+        		chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+					  chrome.tabs.sendMessage(tabs[0].id, {command: "hotKey"}, function(response) {
+					    console.log(response);
+					  });
+				});
+		});
+
+		$("#endR").on('click', function(){
+			console.log("endR click");
+			$(this).prop('disabled', true);
+			chrome.tabs.query({currentWindow: true, active : true}, function() {
+              		chrome.browserAction.setPopup({
+                  	popup: "popup.html"
+           		});
+        		});
+		});	
+
+
+	//Save record button sends to server
+$("#save_record").click(function(){
+	//send data to background script
+	//Retrieves all of data in popup. 
+	console.log("save record click");
 	chrome.runtime.sendMessage({command: "save"}, 
 	            function(response) {
 	                    console.log(response);
@@ -41,15 +65,14 @@ $( document ).ready(function() {
 
   });//end click
 
-
-
-
+$("#startR").on("click", function(){
+	console.log("startR click");
+	chrome.browserAction.setPopup({
+		popup: "hello.html"
+	 });
 });
 
-
-
-
-
+});
 
 
 
