@@ -15,8 +15,8 @@ $(window).mouseover(function(e) {
 
 
 var student_view_next = "null";
+//This message asks the background if you are in "load mode"<p>Since the index is zero-based, the first list item is returned:</p>
 
-//This message asks the background if you are in "load mode"
 $(document).ready(function() {
     retrieveItemfromBackgroundScript();
 });
@@ -30,15 +30,21 @@ function retrieveItemfromBackgroundScript(){
                      }else{
                         createAdvanceLinkButton();
                         //Message asks background if you are on the correct link
+                        chrome.runtime.sendMessage({command: "peek"}, function(response) {
+                            //If urls match, load the html 
+                            var tutorial = response.tutorial;
 
-                        get_dag(function(tutorial){
-                            console.log(tutorial);
                             if(window.location["href"] == get_current_step(tutorial).url) {
                                 //Message asks background for html and moves to next item. 
-                                loadHTMLContent(tutorial);
+                                //TODO: Present the user with choice instead of going with 0th edge 
+                                chrome.runtime.sendMessage({command: "get_next", next_id:tutorial.nodes[tutorial.current_id].edges[0]}, function(responseShift) {
+                                    if(responseShift==null){
+                                        alert("Out of steps!");
+                                    }
+                                    loadHTMLContent(responseShift);
+                                }); //end of shift command msg 
                             }//end of null check
-                        });
-                           
+                        }); //end peek send msg
                      } //end else
                 }); //end first reponse function
     }
@@ -186,9 +192,9 @@ function create_popup_box(top, left, borderedElement, popup_ID){
 
 };
 
-
-$(document).keydown(function(event) {
-
+//detect element selection is an event listener, which we can add and remove. 
+var detect_element_selection = function(event) {
+        
         if(event.keyCode == 81 && event.ctrlKey){ // Ctrl + Q
         //This popup id is the unique ID for all of the SAVE button popups. 
                 var popup_ID = "4iufbw";
@@ -208,7 +214,7 @@ $(document).keydown(function(event) {
                }
         }
 
-});
+}
 
 function goToNextURL(){
 
@@ -265,8 +271,9 @@ function loadHTMLContent(tutorial){
 //This listens to the popup script 
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
-    if (request.command == "load"){
-    
+      switch(request.command){
+        case "load":
+            
         if(student_view_next != "null"){
             console.log("not null");
             student_view_next.remove();
@@ -285,14 +292,21 @@ chrome.runtime.onMessage.addListener(
                 loadHTMLContent(tutorial);
             });
 
+        chrome.runtime.sendMessage({command: "set-load-status"}, 
+                function(response) {
+                        console.log("Setting load status to: " + response);
+                    });
+        createAdvanceLinkButton();
+        sendResponse("Action completed");
 
-    chrome.runtime.sendMessage({command: "set-load-status"}, 
-            function(response) {
-                    console.log("Setting load status to: " + response);
-                 });
-    createAdvanceLinkButton();
-    sendResponse("Action completed");
-    }
+        break;
+        
+        case "hotKey":
+        console.log("entering hotKey command");
+        document.addEventListener("keydown", detect_element_selection);
+        break;
+
+      }
 });
 
 function createAdvanceLinkButton(){
@@ -324,6 +338,7 @@ function createAdvanceLinkButton(){
         goToNextURL();
     });
 
+
 }
 
 /*
@@ -332,6 +347,10 @@ function createAdvanceLinkButton(){
 function get_current_step(tutorialDAG){
     return tutorialDAG.nodes[tutorialDAG.current_id];
 }
+// //Returns a url object. Url objects have the url, and their step array
+// function get_current_url_obj(tutorialObj) {
+//     return tutorialObj.urls[tutorialObj.current_url_num];
+// }
 
 //This is an asynchronous function
 function get_dag(fn){
