@@ -1,33 +1,5 @@
 $( document ).ready(function() {
 
-		$("#submitR").on("click", function(){
-			console.log("submitR click");
-			// var tutorialName = $('#formName').val();
-			// // console.log($('#formName').val());
-			// chrome.runtime.sendMessage({command: "addName", tutorial_name: tutorialName},
-			// 	function(response) {
-	        //           console.log(response);         
-	        //  });
-				$("#endR").prop('disabled', false);
-				$(this).prop('disabled', true);
-				// window.close();
-
-        		chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-					  chrome.tabs.sendMessage(tabs[0].id, {command: "hotKey"}, function(response) {
-					    console.log(response);
-					  });
-				});
-		});
-
-		$("#endR").on('click', function(){
-			console.log("endR click");
-			$(this).prop('disabled', true);
-			chrome.tabs.query({currentWindow: true, active : true}, function() {
-              		chrome.browserAction.setPopup({
-                  	popup: "popup.html"
-           		});
-        		});
-		});	
 
 
 	//Save record button sends to server
@@ -65,12 +37,15 @@ $("#save_record").click(function(){
 
   });//end click
 
-$("#startR").on("click", function(){
-	console.log("startR click");
+$("#newR").on("click", function(){
+	console.log("newR click");
 	chrome.browserAction.setPopup({
-		popup: "hello.html"
+		popup: "./html/new_record.html"
 	 });
+	 //Changes page immediately
+	 window.location.href="/html/new_record.html";
 });
+
 
 });
 
