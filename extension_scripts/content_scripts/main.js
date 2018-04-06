@@ -19,6 +19,17 @@ var student_view_next = "null";
 
 $(document).ready(function() {
     retrieveItemfromBackgroundScript();
+    
+    //Needs to retrieve ephermal background state
+    chrome.runtime.sendMessage({command: "get_recording_state"}, 
+    function(response) {
+    //sends a message to the recording_content_state, which turns off
+    if(response.state == true){
+        document.addEventListener("keydown", detect_element_selection);
+    }else{
+        document.removeEventListener("keydown", detect_element_selection);
+    }
+    });
 });
 
 function retrieveItemfromBackgroundScript(){
@@ -301,9 +312,15 @@ chrome.runtime.onMessage.addListener(
 
         break;
         
-        case "hotKey":
-        console.log("entering hotKey command");
+        case "enable_hot_key":
+        console.log("ENABLING LISTENER");
         document.addEventListener("keydown", detect_element_selection);
+        sendResponse({msg: "enabled Ctrl+Q"});
+        break;
+        case "disable_hot_key":
+        console.log("removing event listener");
+        document.removeEventListener("keydown", detect_element_selection);
+        sendResponse({msg: "disabled Ctrl+Q"});
         break;
 
       }

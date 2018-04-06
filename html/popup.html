@@ -7,8 +7,7 @@
 <html>
   <head>
     <title>Getting Started Extension's Popup</title>
-    <link rel="stylesheet" href="css/foundation.min.css">
-    <link rel="stylesheet" href="css/brandon.css">
+    <link rel="stylesheet" href="../assets/css/foundation.min.css">
     <style type="text/css">
       body {
         margin: 10px;
@@ -20,18 +19,9 @@
         font-size: 15px;
       }
 
-      .container {
-        align-items: center;
-        display: flex;
-        justify-content: space-between;
+      button{
+        width:100%;
       }
-      #main_screen{
-        display: none;
-      }
-      #login_screen{
-        display: flex;
-      }
-
     </style>
 
     <!--
@@ -41,8 +31,8 @@
       - [1]: https://developer.chrome.com/extensions/contentSecurityPolicy
     -->
 
-    <script src="./assets/js/jquery.js"></script>
-    <script src="./assets/js/foundation.min.js"></script>
+    <script src="../assets/js/jquery.js"></script>
+    <script src="../assets/js/foundation.min.js"></script>
   </head>
 
   <body>
@@ -54,8 +44,8 @@
       <h2>Student View</h2> 
       <button data-addCart type="button" class="button" id="load_record"><span>Load Record</span></button>
       <h2>Brandon's View</h2> 
-      <button data-addCart type="button" class="button" id="startR"><span>Start New Recording</span></button>
-      <button data-addCart type="button" class="button" id="loadR"><span>Edit/Load</span></button>
-
-   <script src="popup.js"></script>
+      <button data-addCart type="button" class="button" id="newR"><span>New Recording</span></button><br>
+      <button data-addCart type="button" class="button" id="loadR"><span>Edit/Load</span></button><br>
+      <button data-addCart type="button" class="button" id="sample"><span>Samples</span></button>
+   <script src="../extension_scripts/popup/popup.js"></script>
 </html>
