@@ -37,10 +37,22 @@ var toggleCurrentNode = function(e) {
 
 /**************test code***************/
 window.onload = run;
+function toggleRightMenu() {
+    var menu = document.getElementById("ctxmenu");
+    menu.className = "hide";
+}
+function customRightClick() { 
+    document.addEventListener('click', toggleRightMenu, false);
+    var addNode = document.getElementById("addNode");
+    addNode.addEventListener('click', function(e) { addChildToGraph(DAG); });
+    var delNode = document.getElementById("delNode");
+    delNode.addEventListener('click', function(e) { removeNode(); });
+}
 function run() {
     svg = d3.select("svg"),
     inner = svg.select("g");
-    svg.call(zoom);
+    inner.call(zoom);
+    customRightClick();
     test();
 }
 function test() {
@@ -64,6 +76,7 @@ function connectDAG(currDAG, currNode) {
         return;
     }
     for(var i = 0; i < currNode.edges.length; i++) {
+//        console.log(currNode.edges[i]);
         g.setEdge(currNode.id, currNode.edges[i], { label: i});
         connectDAG(currDAG, currDAG.nodes[currNode.edges[i]]);
     }
@@ -91,6 +104,28 @@ function attachEventListener() {
         nodeL[i].addEventListener("click", function(e) {
             toggleCurrentNode(e);
         });
+        nodeL[i].addEventListener('contextmenu', function(e) {
+                // here you draw your own menu
+                var menu = document.getElementById("ctxmenu");
+                menu.classList.toggle("hide");
+//                menu.style.position = absolute;
+                menu.style.left = e.clientX+'px';
+                menu.style.top = e.clientY+'px';
+                
+                e.preventDefault();
+            }, false);
+        nodeL[i].addEventListener('contextmenu', function(e) { 
+            var labelVal;
+            if(e.path[0].nodeName == "tspan") {
+                labelVal = e.path[0].innerHTML;
+            }
+            else {
+                labelVal = e.path["0"].nextSibling.childNodes["0"].firstChild.childNodes["0"].innerHTML
+            }
+            currentNode = labelVal;
+            setColor();
+        });
+       
     }
     
 }
@@ -104,6 +139,27 @@ function addChildToGraph(currDAG) {
     }
     // connect dag
     connectDAG(currDAG, currDAG.nodes[currDAG.root_id]);
+    update();
+    setColor();
+}
+
+//remove edge for delID from DAG
+function removeEdge(currDAG, currNode, delID) {
+    currNode.edges = currNode.edges.filter(edge => edge != delID);
+    for(var edge in currNode.edges) {
+        removeEdge(currDAG, currDAG.nodes[currNode.edges[edge]], delID);
+    }
+}
+
+//remove node from DAG and graph
+function removeNode() {
+    if(DAG.root_id == currentNode) {
+        DAG.root_id = DAG.nodes[currentNode].edges[0];
+    }
+    delete DAG.nodes[currentNode];
+    removeEdge(DAG, DAG.nodes[DAG.root_id], currentNode);
+    g.removeNode(currentNode);
+    currentNode = null;
     update();
     setColor();
 }
