@@ -8,9 +8,10 @@
         integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E="
         crossorigin="anonymous">
         </script>
+        <script src="graphlib.min.js"></script>
         <script src="https://d3js.org/d3.v4.min.js" charset="utf-8"></script>
         <script src="dagre-d3.js"></script>
-        <script src="dag_view.js"></script>
+        
 
     </head>
     <body>
@@ -66,6 +67,7 @@
             }
         </style>
         <h1>Apollo DAG Display</h1>
+        <button id="add_node_btn">Add Node</button>
         <svg width=600 height=500>  
             <g></g>
         </svg>
@@ -73,4 +75,5 @@
         
         
     </body>
+    <script src="dag_view.js"></script>
 </html>

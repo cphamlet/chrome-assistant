@@ -16,28 +16,18 @@ var zoom = d3.zoom().on("zoom", function() {
 });
 
 
+$(document).ready(function(){
+    $("#add_node_btn").on("click",function(){
+        console.log("test");
+        var rand = Math.random();
+        g.setNode(rand, { shape: 'circle', id:rand, label:""});
+        update();
+    });
+
+});
+
 // Create the renderer
 var render = new dagreD3.render();
-
-// Click event for nodes
-var toggleCurrentNode = function(e) {
-    //check object. **Note will likely change when label of nodes are changed from ID number
-    var labelVal;
-    if(e.path[0].nodeName == "tspan") {
-        labelVal = e.path[0].innerHTML;
-    }
-    else {
-        labelVal = e.path["0"].nextSibling.childNodes["0"].firstChild.childNodes["0"].innerHTML
-    }
-    if(currentNode == labelVal) { 
-        currentNode = null; 
-    }
-    else { 
-        currentNode = labelVal; 
-    }
-    setColor();
-    
-}
 
 /**************test code***************/
 window.onload = run;
@@ -72,7 +62,6 @@ function addChildToGraph(currDAG) {
     //Connect dag
     connectDAG(currDAG, currDAG.nodes[currDAG.root_id]);
     update();
-    setColor();
 }
 /******Helper Fns**************/
 // Run the renderer. This is what draws the final graph.
@@ -87,39 +76,16 @@ function connectDAG(currDAG, currNode) {
     }
 }
 
-
-function setColor() {
-    var allNodes = inner.select("g.nodes");
-    //get all nodes.
-    //toggle color if current selection or not
-    //change their class to current selection or not
-    var listOfNodes = allNodes._groups[0][0].childNodes;
-    for(var i = 0; i < listOfNodes.length; i++) {
-        var currLabel = listOfNodes[i].childNodes[1].childNodes[0].childNodes[0].childNodes[0].innerHTML,
-            color =  (currLabel == currentNode) ? 'green' : 'white';
-        listOfNodes[i].childNodes[0].style = "fill:" + color;
-    }
-}
 function update() {
     render(inner, g);
     attachEventListener();
 }
 function attachEventListener() {
 
-
-
     var maker_space = null; 
     var nodeL = inner.selectAll("g.nodes")._groups[0][0].childNodes;
     var isMouseDown = false;
-    //On releasing mouse, clear all node colors
-    //
-    document.onmouseup = function(){
-        isMouseDown = false;
-        //clears all node's colros on click up
-        nodeL.forEach((node_i) => {
-            node_i.children[0].style = "fill:clear";
-        });
-    };
+
     for(var i = 0; i < nodeL.length; i++) {
         nodeL[i].addEventListener("mousedown",function(e){
             isMouseDown = true;
@@ -155,6 +121,13 @@ function attachEventListener() {
             }
         });
     }
+    document.onmouseup = function(){
+        isMouseDown = false;
+        //clears all node's colors on click up
+        nodeL.forEach((node_i) => {
+            node_i.children[0].style = "fill:clear";
+        });
+    };
     
 }
 
@@ -174,7 +147,6 @@ function DAG() {
       this.nodes[inserted_node.id] = inserted_node;
         this.root_id = inserted_node.id;
     }else{  
-
       //If the item was already inserted. Don't insert again!
       if(this.nodes[inserted_node.id]){
         console.log("Cannot insert the same item twice.");
