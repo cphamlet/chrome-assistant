@@ -57,18 +57,7 @@ function connectDAG(currDAG, currNode) {
     }
     
 }
-function setColor() {
-    var allNodes = inner.select("g.nodes");
-    //get all nodes.
-    // //toggle color if current selection or not
-    // //change their class to current selection or not
-    // var listOfNodes = allNodes._groups[0][0].childNodes;
-    // for(var i = 0; i < listOfNodes.length; i++) {
-    //     var currLabel = listOfNodes[i].childNodes[1].childNodes[0].childNodes[0].childNodes[0].innerHTML,
-    //         color =  (currLabel == currentNode) ? 'green' : 'white';
-    //     listOfNodes[i].childNodes[0].style = "fill:" + color;
-    // }
-}
+
 function update() {
     render(inner, g);
     attachEventListeners();
@@ -148,18 +137,6 @@ function attachEventListeners() {
                 menu.style.top = e.clientY+'px';
                 e.preventDefault();
             });
-        // nodeL[i].addEventListener('contextmenu', function(e) { 
-        //     console.log("right CLIK");
-        //     var labelVal;
-        //     if(e.path[0].nodeName == "tspan") {
-        //         labelVal = e.path[0].innerHTML;
-        //     }
-        //     else {
-        //         labelVal = e.path["0"].nextSibling.childNodes["0"].firstChild.childNodes["0"].innerHTML
-        //     }
-
-        //     setColor();
-        // });
     }
 
 }
@@ -168,5 +145,4 @@ function attachEventListeners() {
 function removeNode(node_to_remove) {
     g.removeNode(node_to_remove);
     update();
-    setColor();
 }
