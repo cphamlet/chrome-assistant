@@ -16,25 +16,47 @@ var zoom = d3.zoom().on("zoom", function() {
 });
 
 
-$(document).ready(function(){
-    $("#add_node_btn").on("click",function(){
-        console.log("test");
-        var rand = Math.random();
-        g.setNode(rand, { shape: 'circle', id:rand, label:""});
-        update();
-    });
-
-});
-
 // Create the renderer
 var render = new dagreD3.render();
 
+// Click event for nodes
+var toggleCurrentNode = function(e) {
+    //check object. **Note will likely change when label of nodes are changed from ID number
+    var labelVal;
+    if(e.path[0].nodeName == "tspan") {
+        labelVal = e.path[0].innerHTML;
+    }
+    else {
+        labelVal = e.path["0"].nextSibling.childNodes["0"].firstChild.childNodes["0"].innerHTML
+    }
+    if(currentNode == labelVal) { 
+        currentNode = null; 
+    }
+    else { 
+        currentNode = labelVal; 
+    }
+    setColor();
+    
+}
+
 /**************test code***************/
 window.onload = run;
+function toggleRightMenu() {
+    var menu = document.getElementById("ctxmenu");
+    menu.className = "hide";
+}
+function customRightClick() { 
+    document.addEventListener('click', toggleRightMenu, false);
+    var addNode = document.getElementById("addNode");
+    addNode.addEventListener('click', function(e) { addChildToGraph(DAG); });
+    var delNode = document.getElementById("delNode");
+    delNode.addEventListener('click', function(e) { removeNode(); });
+}
 function run() {
     svg = d3.select("svg"),
     inner = svg.select("g");
-   // svg.call(zoom);
+    //inner.call(zoom);
+    customRightClick();
     test();
 }
 function test() {
@@ -74,8 +96,20 @@ function connectDAG(currDAG, currNode) {
         g.setEdge(currNode.id, currNode.edges[i], { label: ""});
         connectDAG(currDAG, currDAG.nodes[currNode.edges[i]]);
     }
+    
 }
-
+function setColor() {
+    var allNodes = inner.select("g.nodes");
+    //get all nodes.
+    //toggle color if current selection or not
+    //change their class to current selection or not
+    var listOfNodes = allNodes._groups[0][0].childNodes;
+    for(var i = 0; i < listOfNodes.length; i++) {
+        var currLabel = listOfNodes[i].childNodes[1].childNodes[0].childNodes[0].childNodes[0].innerHTML,
+            color =  (currLabel == currentNode) ? 'green' : 'white';
+        listOfNodes[i].childNodes[0].style = "fill:" + color;
+    }
+}
 function update() {
     render(inner, g);
     attachEventListener();
@@ -120,6 +154,27 @@ function attachEventListener() {
                 maker_space = null;
             }
         });
+        nodeL[i].addEventListener('contextmenu', function(e) {
+                // here you draw your own menu
+                var menu = document.getElementById("ctxmenu");
+                menu.classList.toggle("hide");
+//                menu.style.position = absolute;
+                menu.style.left = e.clientX+'px';
+                menu.style.top = e.clientY+'px';
+                
+                e.preventDefault();
+            }, false);
+        nodeL[i].addEventListener('contextmenu', function(e) { 
+            var labelVal;
+            if(e.path[0].nodeName == "tspan") {
+                labelVal = e.path[0].innerHTML;
+            }
+            else {
+                labelVal = e.path["0"].nextSibling.childNodes["0"].firstChild.childNodes["0"].innerHTML
+            }
+            currentNode = labelVal;
+            setColor();
+        });
     }
     document.onmouseup = function(){
         isMouseDown = false;
@@ -130,7 +185,40 @@ function attachEventListener() {
     };
     
 }
+function addChildToGraph(currDAG) {
+    var node = new Node(123, "http://google.com", "hello_World", "html");
+    var parent = currentNode;
+    currDAG.addChild(currentNode, node);
+    //add to g
+    for(var currNode in currDAG.nodes) {
+       g.setNode(currNode, { shape: 'circle'}); 
+    }
+    // connect dag
+    connectDAG(currDAG, currDAG.nodes[currDAG.root_id]);
+    update();
+    setColor();
+}
 
+//remove edge for delID from DAG
+function removeEdge(currDAG, currNode, delID) {
+    currNode.edges = currNode.edges.filter(edge => edge != delID);
+    for(var edge in currNode.edges) {
+        removeEdge(currDAG, currDAG.nodes[currNode.edges[edge]], delID);
+    }
+}
+
+//remove node from DAG and graph
+function removeNode() {
+    if(DAG.root_id == currentNode) {
+        DAG.root_id = DAG.nodes[currentNode].edges[0];
+    }
+    delete DAG.nodes[currentNode];
+    removeEdge(DAG, DAG.nodes[DAG.root_id], currentNode);
+    g.removeNode(currentNode);
+    currentNode = null;
+    update();
+    setColor();
+}
 /***********Code From Background Script*************/
 function DAG() {
   /*Fields*/
@@ -147,6 +235,7 @@ function DAG() {
       this.nodes[inserted_node.id] = inserted_node;
         this.root_id = inserted_node.id;
     }else{  
+
       //If the item was already inserted. Don't insert again!
       if(this.nodes[inserted_node.id]){
         console.log("Cannot insert the same item twice.");

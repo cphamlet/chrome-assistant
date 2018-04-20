@@ -3,16 +3,9 @@
     <head>
         <meta charset="utf-8">
         <title>Dag Representation for Apollo</title>
-        <script
-        src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-        integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E="
-        crossorigin="anonymous">
-        </script>
-        <script src="graphlib.min.js"></script>
         <script src="https://d3js.org/d3.v4.min.js" charset="utf-8"></script>
         <script src="dagre-d3.js"></script>
         
-
     </head>
     <body>
         <style id="css">
@@ -45,6 +38,27 @@
                 right: 0px; 
                 width: 5em;
             }
+            #ctxmenu {
+                position: absolute;
+                z-index: 1000;
+                background-color: white;
+                border: 1px solid black;
+                border-radius: 5px;
+                height: auto;
+            }
+            .hide {
+                display: none;
+            }
+            #rmenu {
+                list-style: none;
+                margin-left: 0;
+                margin-top: 0;
+                padding: 0.5em;
+            }
+            .menu-option {
+                padding: 0.5em;
+                border-bottom: 1px solid gray;
+            }
             #addNode {
                 position: relative;
                 width: 100%;
@@ -66,14 +80,18 @@
               stroke-width: 1.5px;
             }
         </style>
+        <div id="ctxmenu" class="hide">
+            <ul id="rmenu">
+                <li id="addNode" class="menu-option">Add Node</li>
+                <li id="delNode" class="menu-option">Delete Node</li>
+            </ul>
+        </div>
         <h1>Apollo DAG Display</h1>
-        <button id="add_node_btn">Add Node</button>
         <svg width=600 height=500>  
             <g></g>
         </svg>
         
-        
+        <script src="dag_view.js"></script>
         
     </body>
-    <script src="dag_view.js"></script>
 </html>
