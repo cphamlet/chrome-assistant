@@ -1,7 +1,5 @@
 $( document ).ready(function() {
 
-
-
 	//Save record button sends to server
 $("#save_record").click(function(){
 	//send data to background script
