@@ -37,23 +37,24 @@ function retrieveItemfromBackgroundScript(){
                 function(response) {
                     //if false, you are not in "load mode"
                      if(response == false){
-                        console.log("Not loaded.");
+                        console.log("Not in load mode");
                      }else{
                         createAdvanceLinkButton();
                         //Message asks background if you are on the correct link
-                        chrome.runtime.sendMessage({command: "peek"}, function(response) {
+                        get_dag(function(tutorial){
                             //If urls match, load the html 
-                            var tutorial = response.tutorial;
 
-                            if(window.location["href"] == get_current_step(tutorial).url) {
+                            if(window.location["href"] == get_current_node(tutorial).url) {
                                 //Message asks background for html and moves to next item. 
                                 //TODO: Present the user with choice instead of going with 0th edge 
-                                chrome.runtime.sendMessage({command: "get_next", next_id:tutorial.nodes[tutorial.current_id].edges[0]}, function(responseShift) {
-                                    if(responseShift==null){
-                                        alert("Out of steps!");
-                                    }
-                                    loadHTMLContent(responseShift);
-                                }); //end of shift command msg 
+                                loadHTMLContent(tutorial);
+                                // get_next_node(tutorial, function(response){
+                                //     if(response==null) return;
+                                //     var tutorialResult = JSON.parse(response.tutorial);
+                                //     tutorialResult.DAG = graphlib.json.read(tutorialResult.DAG);
+                                    
+                                //     loadHTMLContent(tutorialResult);
+                                // }); //end of shift command msg 
                             }//end of null check
                         }); //end peek send msg
                      } //end else
@@ -184,7 +185,6 @@ function create_popup_box(top, left, borderedElement, popup_ID){
             $(title_text).focus();
         });
 
-
         //Hanldes the click function for newly created save button
         $(save_button).click(function(){
             //When you click the save button, this reverts the green block of text back to normal. 
@@ -192,7 +192,7 @@ function create_popup_box(top, left, borderedElement, popup_ID){
                   //This replace with function, removes the element with the green border if one already exists. 
                   $(elementOnMouseOver).replaceWith($(unborderedElementPointerHTML).prop('outerHTML'));
               }
-           chrome.runtime.sendMessage({command: "record_action", element_html:unborderedElementPointerHTML, entered_text:$(editable_text).text(), title_text:$(title_text).val(), url:window.location["href"]}, 
+           chrome.runtime.sendMessage({command: "record_action", html:unborderedElementPointerHTML, entered_text:$(editable_text).text(), title_text:$(title_text).val(), url:window.location["href"]}, 
             function(response) {
                 //    alert(response.msg +" : "+ response.enteredText + " : "+ window.location["href"]);
             });
@@ -232,16 +232,18 @@ function goToNextURL(){
             // //TODO: Present the user with choice instead of going with 0th edge 
                 get_dag(function(tutorial){
 
-                    chrome.runtime.sendMessage({command: "get_next", next_id:tutorial.nodes[tutorial.current_id].edges[0]}, function(response) {
-                        tutorial = response.tutorial;
-                        if(response==null){
-                            alert("Out of steps!");
+                    get_next_node(tutorial, function(response){
+                        if(response==null)return;
+                        //Converts tutorial into graphlib object
+                        tutorial = JSON.parse(response.tutorial);
+                        tutorial.DAG = graphlib.json.read(tutorial.DAG);
+                        
+                    
+                        if(typeof(tutorial) != 'undefined' && window.location["href"] != get_current_node(tutorial).url) {
+                            window.location = get_current_node(tutorial).url;
+                        }else{
+                            loadHTMLContent(tutorial);
                         }
-                   if(typeof(response.tutorial) != 'undefined' && window.location["href"] != get_current_step(response.tutorial).url) {
-                        window.location = get_current_step(response.tutorial).url;
-                    }else{
-                           loadHTMLContent(tutorial);
-                    }
                           
                     }); 
                 });
@@ -251,9 +253,9 @@ function goToNextURL(){
 
 //Displays border on webpage from element stored in background page. 
 function loadHTMLContent(tutorial){
-           
-            let instructor_text = $('<p id = "sdajck3" href="#">Text box</p>');
-            instructor_text[0].innerHTML = get_current_step(tutorial).caption;
+            console.log("inside loadHTML content");
+            var instructor_text = $('<p id = "sdajck3" href="#">Text box</p>');
+            instructor_text[0].innerHTML = get_current_node(tutorial).entered_text;
             instructor_text.css({
                  'position': 'fixed', 
                  'bottom':'5%',
@@ -271,8 +273,12 @@ function loadHTMLContent(tutorial){
 
             //console.log("Searching for element: " 
             var all_elements = document.getElementsByTagName("*");
+            console.log(get_current_node(tutorial));
+            console.log(get_current_node(tutorial));
+            console.log(get_current_node(tutorial).html);
             for (var i = 0, element; element = all_elements[i++];) {
-                if(element.outerHTML == get_current_step(tutorial).element_html){
+                
+                if(element.outerHTML == get_current_node(tutorial).html){
                     element.style.border = "thick solid green";
                 }
             }
@@ -291,14 +297,12 @@ chrome.runtime.onMessage.addListener(
             student_view_next = "null";
             sendResponse("Action completed");
         }
-
             //If urls match, load the html 
             get_dag(function(tutorial){
                 console.log(tutorial);
-                if(window.location["href"] != get_current_step(tutorial).url) {
+                if(window.location["href"] != get_current_node(tutorial).url) {
                     //Message asks background for html and moves to next item. 
-                    window.location = get_current_step(tutorial).url;
-                   
+                    window.location = get_current_node(tutorial).url;
                 }//end of null check
                 loadHTMLContent(tutorial);
             });
@@ -306,19 +310,18 @@ chrome.runtime.onMessage.addListener(
         chrome.runtime.sendMessage({command: "set-load-status"}, 
                 function(response) {
                         console.log("Setting load status to: " + response);
-                    });
+                    }
+        );
         createAdvanceLinkButton();
         sendResponse("Action completed");
 
         break;
         
         case "enable_hot_key":
-        console.log("ENABLING LISTENER");
         document.addEventListener("keydown", detect_element_selection);
         sendResponse({msg: "enabled Ctrl+Q"});
         break;
         case "disable_hot_key":
-        console.log("removing event listener");
         document.removeEventListener("keydown", detect_element_selection);
         sendResponse({msg: "disabled Ctrl+Q"});
         break;
@@ -352,6 +355,7 @@ function createAdvanceLinkButton(){
 
     student_view_next.click(function(e){
         e.preventDefault();
+        console.log("trigger next");
         goToNextURL();
     });
 
@@ -361,8 +365,11 @@ function createAdvanceLinkButton(){
 /*
 * Functions for accessing members of the tutorial object.
 */
-function get_current_step(tutorialDAG){
-    return tutorialDAG.nodes[tutorialDAG.current_id];
+//Input: {DAG: graphlib, current_node_id, root_node_id, name}
+//Output: The value of the node at the current node id.
+//Ex: {url: "some url", entered_text:"some text", title_text:"a title", entered_html:"html"}
+function get_current_node(tutorial){
+    return tutorial.DAG.node(tutorial.current_node_id).node_value;
 }
 // //Returns a url object. Url objects have the url, and their step array
 // function get_current_url_obj(tutorialObj) {
@@ -370,8 +377,23 @@ function get_current_step(tutorialDAG){
 // }
 
 //This is an asynchronous function
-function get_dag(fn){
+function get_dag(callback){
     chrome.runtime.sendMessage({command: "peek"}, function(response) {
-       fn(response.tutorial);
+        var current_tutorial = JSON.parse(response.tutorial);
+        current_tutorial.DAG = graphlib.json.read(current_tutorial.DAG); 
+       callback(current_tutorial);
     });
 } //end peek send msg
+
+function get_next_node(tutorial, callback){
+    //console.log(tutorial.DAG.outEdges(tutorial.current_node_id));
+   if(typeof(tutorial.DAG.outEdges(tutorial.current_node_id)[0].w) == "undefined"){
+       //If this statement is reached, there are no more steps in the tutorial.
+       alert("Thank you for completing the tutorial!");
+       callback(null);
+   }
+   var next_id = tutorial.DAG.outEdges(tutorial.current_node_id)[0].w;
+    chrome.runtime.sendMessage({command: "get_next", next_id:next_id}, function(response) {
+        callback(response);
+    });
+}

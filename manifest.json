@@ -16,13 +16,12 @@
             "http://*/*",
             "https://*/*"
             ],
-        "js": ["./assets/js/jquery.js", "./assets/js/jquery-ui.js", "./extension_scripts/content_scripts/draggable.js", "./extension_scripts/content_scripts/main.js",
-            "./extension_scripts/content_scripts/recording_content_state.js"],
+        "js": ["./assets/js/graphlib.min.js", "./assets/js/jquery.js", "./assets/js/jquery-ui.js", "./extension_scripts/content_scripts/draggable.js", "./extension_scripts/content_scripts/main.js"],
         "run_at": "document_end"       
         }
     ], 
     "background": {
-    "scripts": ["./extension_scripts/background/background.js", "./extension_scripts/background/recording_state.js", "./assets/js/jquery.js"]
+    "scripts": ["./assets/js/graphlib.min.js", "./extension_scripts/background/background.js", "./extension_scripts/background/recording_state.js", "./assets/js/jquery.js"]
     },
     "manifest_version":2
 }
