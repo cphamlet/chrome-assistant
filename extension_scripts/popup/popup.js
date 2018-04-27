@@ -1,16 +1,5 @@
 $( document ).ready(function() {
 
-	//Save record button sends to server
-$("#save_record").click(function(){
-	//send data to background script
-	//Retrieves all of data in popup. 
-	console.log("save record click");
-	chrome.runtime.sendMessage({command: "save"}, 
-	            function(response) {
-	                    console.log(response);
-	            });
-	});
-
 
 //Clear button clears list
 	$("#clear_record").click(function(){
