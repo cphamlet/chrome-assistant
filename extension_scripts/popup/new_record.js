@@ -54,4 +54,8 @@ $("#endR").on('click', function(){
                 });
           });
     });
+    chrome.runtime.sendMessage({command: "save"}, 
+    function(response) {
+            console.log(response);
+    });
 });
